@@ -102,6 +102,7 @@ class board:
 
     @staticmethod
     def tail_collision(self):
+        # ! Tail collition not working with jsut one Tail yet
         for t in self.snake.tail:
             if self.snake.x == t.x and self.snake.y == t.y:
                 return True
