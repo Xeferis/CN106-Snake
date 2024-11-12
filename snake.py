@@ -45,17 +45,17 @@ class board():
     def control(self, event):
         direction = event.char
         if direction == 'w':
-            self.snake.move('u')
+            self.snake.direction = 'u'
         elif direction == 's':
-            self.snake.move('d')
+            self.snake.direction = 'd'
         elif direction == 'a':
-            self.snake.move('l')
+            self.snake.direction = 'l'
         elif direction == 'd':
-            self.snake.move('r')
+            self.snake.direction = 'r'
 
     def refresh(self):
-        print(self.snake.get_pos())
         self.app.bind("<KeyPress>", lambda event: self.control(event))
+        self.snake.move(self.snake.direction)
         self.clear()
         self.render()
         self.check_collision()
@@ -104,6 +104,7 @@ class snake(body):
         self.length = 0
         self.last = []
         self.tail = []
+        self.direction = None
 
     def move(self, direction: str, step: int = 10):
         if direction == 'u':
@@ -114,14 +115,19 @@ class snake(body):
             self.x -= step
         elif direction == 'r':
             self.x += step
+        elif direction is None:
+            print('press wasd to move')
         else:
             raise ValueError('Invalid direction')
 
         if self.length >= 0:
+            if len(self.last) > self.length:
+                self.last.pop(0)
             self.last.append(self.get_pos())
 
         for i in range(self.length):
-            self.tail[i].update(self.last[i][0], self.last[i][1])
+            self.tail[i].x = self.last[i][0]
+            self.tail[i].y = self.last[i][1]
 
     def grow(self):
         self.length += 1
