@@ -1,15 +1,16 @@
 import tkinter as tk
 from random import randrange
 
-class board():
+
+class board:
     def __init__(self, snake, width: int = 500, height: int = 500):
         self.app = tk.Tk()
-        self.app.title('Snake')
+        self.app.title("Snake")
         self.level = 1
         self.speed = 100
         self.width = width
         self.height = height
-        self.canvas = tk.Canvas(self.app, width=width+5, height=height+5)
+        self.canvas = tk.Canvas(self.app, width=width + 5, height=height + 5)
         self.food = []
         self.points = 0
         self.game_over = False
@@ -20,7 +21,7 @@ class board():
         self.snake.x = width // 2
         self.snake.y = height // 2
 
-        self.food_color = 'red'
+        self.food_color = "red"
 
     def progression(self):
         if self.points % 5 == 0 and self.points != 0:
@@ -30,7 +31,7 @@ class board():
                 self.speed -= 10
 
     def generate_food(self, amount: int = 2):
-        print('Generating food')
+        print("Generating food")
         for i in range(amount):
             x = randrange(0, self.width, 10)
             y = randrange(0, self.height, 10)
@@ -38,16 +39,26 @@ class board():
 
     def render_food(self):
         for f in self.food:
-            self.canvas.create_oval(f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color)
+            self.canvas.create_oval(
+                f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color
+            )
 
     def render_snake(self):
-        self.canvas.create_rectangle(self.snake.x, self.snake.y, self.snake.x + self.snake.width, self.snake.y+ self.snake.height, fill='green')
+        self.canvas.create_rectangle(
+            self.snake.x,
+            self.snake.y,
+            self.snake.x + self.snake.width,
+            self.snake.y + self.snake.height,
+            fill="green",
+        )
         for t in self.snake.tail:
-            self.canvas.create_rectangle(t.x, t.y, t.x + t.width, t.y + t.height, fill='green')
+            self.canvas.create_rectangle(
+                t.x, t.y, t.x + t.width, t.y + t.height, fill="green"
+            )
 
     def render_infos(self):
-        self.canvas.create_text(10, 10, text=f'Points: {self.points}', anchor='nw')
-        self.canvas.create_text(10, 20, text=f'Level: {self.level}', anchor='nw')
+        self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw")
+        self.canvas.create_text(10, 20, text=f"Level: {self.level}", anchor="nw")
 
     def render(self):
         self.render_infos()
@@ -55,18 +66,18 @@ class board():
         self.render_snake()
 
     def clear(self):
-        self.canvas.delete('all')
+        self.canvas.delete("all")
 
     def control(self, event):
         direction = event.char
-        if direction == 'w':
-            self.snake.direction = 'u'
-        elif direction == 's':
-            self.snake.direction = 'd'
-        elif direction == 'a':
-            self.snake.direction = 'l'
-        elif direction == 'd':
-            self.snake.direction = 'r'
+        if direction == "w":
+            self.snake.direction = "u"
+        elif direction == "s":
+            self.snake.direction = "d"
+        elif direction == "a":
+            self.snake.direction = "l"
+        elif direction == "d":
+            self.snake.direction = "r"
 
     def refresh(self):
         self.progression()
@@ -86,7 +97,12 @@ class board():
                 self.food.remove(f)
                 self.generate_food(1)
 
-        if self.snake.x < 0 or self.snake.x > self.width or self.snake.y < 0 or self.snake.y > self.height:
+        if (
+            self.snake.x < 0
+            or self.snake.x > self.width
+            or self.snake.y < 0
+            or self.snake.y > self.height
+        ):
             self.gameOver()
 
         if self.snake.length > 1:
@@ -95,13 +111,17 @@ class board():
                     self.gameOver()
 
     def gameOver(self):
-        print('Game Over')
-        self.canvas.create_text(self.width // 2, self.height // 2, text='Game Over', fill='red')
+        print("Game Over")
+        self.canvas.create_text(
+            self.width // 2, self.height // 2, text="Game Over", fill="red"
+        )
         self.game_over = True
 
     def gameWon(self):
-        print('You Win')
-        self.canvas.create_text(self.width // 2, self.height // 2, text='You Win', fill='green')
+        print("You Win")
+        self.canvas.create_text(
+            self.width // 2, self.height // 2, text="You Win", fill="green"
+        )
         self.game_over = True
 
     def run(self):
@@ -111,7 +131,7 @@ class board():
 
 
 class body:
-    def __init__(self, x = 0, y = 0, size=10):
+    def __init__(self, x=0, y=0, size=10):
         self.height = size
         self.width = size
         self.x = x
@@ -139,18 +159,18 @@ class snake(body):
         self.direction = None
 
     def move(self, direction: str, step: int = 10):
-        if direction == 'u':
+        if direction == "u":
             self.y -= step
-        elif direction == 'd':
+        elif direction == "d":
             self.y += step
-        elif direction == 'l':
+        elif direction == "l":
             self.x -= step
-        elif direction == 'r':
+        elif direction == "r":
             self.x += step
         elif direction is None:
-            print('press wasd to move')
+            print("press wasd to move")
         else:
-            raise ValueError('Invalid direction')
+            raise ValueError("Invalid direction")
 
         if self.length >= 0:
             if len(self.last) > self.length:
@@ -166,11 +186,9 @@ class snake(body):
         self.tail.append(body(self.last[-1][0], self.last[-1][1]))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     s = snake()
 
     b = board(snake=s)
 
     b.run()
-
-    
