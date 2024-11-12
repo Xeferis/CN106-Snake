@@ -5,11 +5,14 @@ class board():
     def __init__(self, snake, width: int = 500, height: int = 500):
         self.app = tk.Tk()
         self.app.title('Snake')
+        self.level = 1
         self.speed = 100
         self.width = width
         self.height = height
         self.canvas = tk.Canvas(self.app, width=width+5, height=height+5)
         self.food = []
+        self.points = 0
+        self.game_over = False
         self.canvas.pack()
 
         self.snake = snake
@@ -18,6 +21,14 @@ class board():
         self.snake.y = height // 2
 
         self.food_color = 'red'
+
+    def progression(self):
+        self.points = self.snake.length * 10
+        if self.points == 50 and self.points != 0:
+            self.points = 0
+            self.level += 1
+            if self.speed > 10:
+                self.speed -= 10
 
     def generate_food(self, amount: int = 2):
         print('Generating food')
@@ -35,7 +46,12 @@ class board():
         for t in self.snake.tail:
             self.canvas.create_rectangle(t.x, t.y, t.x + t.width, t.y + t.height, fill='green')
 
+    def render_infos(self):
+        self.canvas.create_text(10, 10, text=f'Points: {self.points}', anchor='nw')
+        self.canvas.create_text(10, 20, text=f'Level: {self.level}', anchor='nw')
+
     def render(self):
+        self.render_infos()
         self.render_food()
         self.render_snake()
 
@@ -54,12 +70,14 @@ class board():
             self.snake.direction = 'r'
 
     def refresh(self):
+        self.progression()
         self.app.bind("<KeyPress>", lambda event: self.control(event))
         self.snake.move(self.snake.direction)
         self.clear()
         self.render()
         self.check_collision()
-        self.canvas.after(self.speed, self.refresh)
+        if not self.game_over:
+            self.canvas.after(self.speed, self.refresh)
 
     def check_collision(self):
         for f in self.food:
@@ -70,7 +88,8 @@ class board():
 
         if self.snake.x < 0 or self.snake.x > self.width or self.snake.y < 0 or self.snake.y > self.height:
             print('Game Over')
-            self.app.destroy()
+            self.canvas.create_text(self.width // 2, self.height // 2, text='Game Over', fill='red')
+            self.game_over = True
 
     def run(self):
         self.generate_food()
