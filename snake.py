@@ -1,55 +1,85 @@
-from random import randint
+import tkinter as tk
+from random import randrange
 
 class board():
-    def __init__(self, width, height):
+    def __init__(self, snake, width: int = 500, height: int = 500):
+        self.app = tk.Tk()
+        self.app.title('Snake')
+        self.speed = 100
         self.width = width
         self.height = height
+        self.canvas = tk.Canvas(self.app, width=width+5, height=height+5)
         self.food = []
+        self.canvas.pack()
 
-    def generate_food(self, amount: int = 1):
+        self.snake = snake
+
+        self.snake.x = width // 2
+        self.snake.y = height // 2
+
+        self.food_color = 'red'
+
+    def generate_food(self, amount: int = 2):
+        print('Generating food')
         for i in range(amount):
-            x = randint(1, self.width-2)
-            y = randint(1, self.height-2)
+            x = randrange(0, self.width, 10)
+            y = randrange(0, self.height, 10)
             self.food.append(food(x, y))
 
-    def render(self, s):
-        self.generate_food()
+    def render_food(self):
+        for f in self.food:
+            self.canvas.create_oval(f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color)
 
-        # ! Temporary render function
-        for i in range(self.height):
-            for j in range(self.width):
-                for f in self.food:
-                    if i == f.y and j == f.x:
-                        print('X', end='')
-                        break
-                if i == 0 or i == self.height-1:
-                    print('-', end='')
-                elif j == 0 or j == self.width-1:
-                    print('|', end='')
-                elif i == s.y and j == s.x:
-                    print('O', end='')
-                else:
-                    print(' ', end='')
-            print()
-        # ! End of render function
+    def render_snake(self):
+        self.canvas.create_rectangle(self.snake.x, self.snake.y, self.snake.x + self.snake.width, self.snake.y+ self.snake.height, fill='green')
+        for t in self.snake.tail:
+            self.canvas.create_rectangle(t.x, t.y, t.x + t.width, t.y + t.height, fill='green')
+
+    def render(self):
+        self.render_food()
+        self.render_snake()
 
     def clear(self):
-        # ! Temporary clear function
-        print('\033[H\033[J')
+        self.canvas.delete('all')
 
-    def control(self, s):
-        # ! Temporary control function
-        direction = input('Enter direction: ')
-        s.move(direction)
+    def control(self, event):
+        direction = event.char
+        if direction == 'w':
+            self.snake.move('u')
+        elif direction == 's':
+            self.snake.move('d')
+        elif direction == 'a':
+            self.snake.move('l')
+        elif direction == 'd':
+            self.snake.move('r')
 
-    def refresh(self, s):
-        self.control(s)
+    def refresh(self):
+        print(self.snake.get_pos())
+        self.app.bind("<KeyPress>", lambda event: self.control(event))
         self.clear()
-        self.render(s)
+        self.render()
+        self.check_collision()
+        self.canvas.after(self.speed, self.refresh)
+
+    def check_collision(self):
+        for f in self.food:
+            if self.snake.x == f.x and self.snake.y == f.y:
+                self.snake.grow()
+                self.food.remove(f)
+                self.generate_food(1)
+
+        if self.snake.x < 0 or self.snake.x > self.width or self.snake.y < 0 or self.snake.y > self.height:
+            print('Game Over')
+            self.app.destroy()
+
+    def run(self):
+        self.generate_food()
+        self.refresh()
+        self.app.mainloop()
 
 
 class body:
-    def __init__(self, x, y, size=10):
+    def __init__(self, x = 0, y = 0, size=10):
         self.height = size
         self.width = size
         self.x = x
@@ -69,13 +99,13 @@ class food(body):
 
 
 class snake(body):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self):
+        super().__init__()
         self.length = 0
         self.last = []
         self.tail = []
 
-    def move(self, direction: str, step: int = 1):
+    def move(self, direction: str, step: int = 10):
         if direction == 'u':
             self.y -= step
         elif direction == 'd':
@@ -87,7 +117,7 @@ class snake(body):
         else:
             raise ValueError('Invalid direction')
 
-        if self.length > 0:
+        if self.length >= 0:
             self.last.append(self.get_pos())
 
         for i in range(self.length):
@@ -97,20 +127,12 @@ class snake(body):
         self.length += 1
         self.tail.append(body(self.last[-1][0], self.last[-1][1]))
 
-    def check_collision(self, board: board) -> bool:
-        if self.x < 0 or self.x >= board.width or self.y < 0 or self.y >= board.height:
-            return True
-        return False
-
 
 if __name__ == '__main__':
-    b = board(30, 20)
-    s = snake(15, 10)
+    s = snake()
 
-    b.render(s)
+    b = board(snake=s)
 
-    while True:
-        b.refresh(s)
-        if s.check_collision(b):
-            print('Game Over')
-            break
+    b.run()
+
+    
