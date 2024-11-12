@@ -89,7 +89,26 @@ class board:
         if not self.game_over:
             self.canvas.after(self.speed, self.refresh)
 
-    def check_collision(self):
+    @staticmethod
+    def wall_collision(self):
+        if (
+            self.snake.x < 0
+            or self.snake.x > self.width
+            or self.snake.y < 0
+            or self.snake.y > self.height
+        ):
+            return True
+        return False
+
+    @staticmethod
+    def tail_collision(self):
+        for t in self.snake.tail:
+            if self.snake.x == t.x and self.snake.y == t.y:
+                return True
+        return False
+
+    @staticmethod
+    def food_collision(self):
         for f in self.food:
             if self.snake.x == f.x and self.snake.y == f.y:
                 self.snake.grow()
@@ -97,18 +116,11 @@ class board:
                 self.food.remove(f)
                 self.generate_food(1)
 
-        if (
-            self.snake.x < 0
-            or self.snake.x > self.width
-            or self.snake.y < 0
-            or self.snake.y > self.height
-        ):
+    def check_collision(self):
+        if self.wall_collision() or self.tail_collision():
             self.gameOver()
 
-        if self.snake.length > 1:
-            for t in self.snake.tail[:-1]:
-                if self.snake.x == t.x and self.snake.y == t.y:
-                    self.gameOver()
+        self.food_collision()
 
     def gameOver(self):
         print("Game Over")
