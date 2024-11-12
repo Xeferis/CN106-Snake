@@ -23,9 +23,8 @@ class board():
         self.food_color = 'red'
 
     def progression(self):
-        self.points = self.snake.length * 10
-        if self.points == 50 and self.points != 0:
-            self.points = 0
+        if self.points % 5 == 0 and self.points != 0:
+            self.points += 6
             self.level += 1
             if self.speed > 10:
                 self.speed -= 10
@@ -83,13 +82,27 @@ class board():
         for f in self.food:
             if self.snake.x == f.x and self.snake.y == f.y:
                 self.snake.grow()
+                self.points += 1
                 self.food.remove(f)
                 self.generate_food(1)
 
         if self.snake.x < 0 or self.snake.x > self.width or self.snake.y < 0 or self.snake.y > self.height:
-            print('Game Over')
-            self.canvas.create_text(self.width // 2, self.height // 2, text='Game Over', fill='red')
-            self.game_over = True
+            self.gameOver()
+
+        if self.snake.length > 1:
+            for t in self.snake.tail[:-1]:
+                if self.snake.x == t.x and self.snake.y == t.y:
+                    self.gameOver()
+
+    def gameOver(self):
+        print('Game Over')
+        self.canvas.create_text(self.width // 2, self.height // 2, text='Game Over', fill='red')
+        self.game_over = True
+
+    def gameWon(self):
+        print('You Win')
+        self.canvas.create_text(self.width // 2, self.height // 2, text='You Win', fill='green')
+        self.game_over = True
 
     def run(self):
         self.generate_food()
