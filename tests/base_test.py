@@ -1,7 +1,9 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from snake import *
+
 
 def test_snake():
     s = snake()
@@ -12,6 +14,7 @@ def test_snake():
     assert s.width == 10
     assert s.height == 10
 
+
 def test_body():
     b = body()
     assert b.x == 0
@@ -19,12 +22,14 @@ def test_body():
     assert b.height == 10
     assert b.width == 10
 
+
 def test_food():
     f = food(10, 10)
     assert f.x == 10
     assert f.y == 10
     assert f.height == 10
     assert f.width == 10
+
 
 def test_board():
     s = snake()
@@ -34,4 +39,3 @@ def test_board():
     assert b.height == 500
     assert b.food == []
     assert b.game_over == False
-
