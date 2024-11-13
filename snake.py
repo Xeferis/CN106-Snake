@@ -4,26 +4,30 @@ from random import randrange
 
 class board:
     def __init__(self, snake, width: int = 500, height: int = 500):
+        # App init
         self.app = tk.Tk()
         self.app.title("Snake")
-        self.level = 1
-        self.speed = 100
         self.width = width
         self.height = height
         self.canvas = tk.Canvas(self.app, width=width + 5, height=height + 5)
+        self.canvas.pack()
+
+        # Game init
+        start_x = width // 2
+        start_y = height // 2
+
+        self.snake = snake
+        self.snake.update(start_x, start_y)
+
+        self.level = 1
+        self.speed = 100
         self.food = []
         self.points = 0
         self.game_over = False
-        self.canvas.pack()
 
-        self.snake = snake
-
-        self.snake.x = width // 2
-        self.snake.y = height // 2
-
+        # Gamesettings
         self.food_color = "red"
 
-    @staticmethod
     def progression(self):
         if self.points % 5 == 0 and self.points != 0:
             self.points += 6
@@ -38,14 +42,12 @@ class board:
             y = randrange(0, self.height, 10)
             self.food.append(food(x, y))
 
-    @staticmethod
     def render_food(self):
         for f in self.food:
             self.canvas.create_oval(
                 f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color
             )
 
-    @staticmethod
     def render_snake(self):
         self.canvas.create_rectangle(
             self.snake.x,
@@ -59,18 +61,15 @@ class board:
                 t.x, t.y, t.x + t.width, t.y + t.height, fill="green"
             )
 
-    @staticmethod
     def render_infos(self):
         self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw")
         self.canvas.create_text(10, 20, text=f"Level: {self.level}", anchor="nw")
 
-    @staticmethod
     def render(self):
         self.render_infos()
         self.render_food()
         self.render_snake()
 
-    @staticmethod
     def clear(self):
         self.canvas.delete("all")
 
@@ -85,7 +84,6 @@ class board:
         elif direction == "d":
             self.snake.direction = "r"
 
-    @staticmethod
     def refresh(self):
         self.progression()
         self.app.bind("<KeyPress>", lambda event: self.control(event))
@@ -96,7 +94,6 @@ class board:
         if not self.game_over:
             self.canvas.after(self.speed, self.refresh)
 
-    @staticmethod
     def wall_collision(self):
         if (
             self.snake.x < 0
@@ -107,7 +104,6 @@ class board:
             return True
         return False
 
-    @staticmethod
     def tail_collision(self):
         # ! Tail collition not working with jsut one Tail yet
         for t in self.snake.tail:
@@ -115,7 +111,6 @@ class board:
                 return True
         return False
 
-    @staticmethod
     def food_collision(self):
         for f in self.food:
             if self.snake.x == f.x and self.snake.y == f.y:
@@ -124,14 +119,12 @@ class board:
                 self.food.remove(f)
                 self.generate_food(1)
 
-    @staticmethod
     def check_collision(self):
         if self.wall_collision() or self.tail_collision():
             self.gameOver()
 
         self.food_collision()
 
-    @staticmethod
     def gameOver(self):
         print("Game Over")
         self.canvas.create_text(
@@ -139,7 +132,6 @@ class board:
         )
         self.game_over = True
 
-    @staticmethod
     def gameWon(self):
         print("You Win")
         self.canvas.create_text(
@@ -147,7 +139,6 @@ class board:
         )
         self.game_over = True
 
-    @staticmethod
     def run(self):
         self.generate_food()
         self.refresh()
