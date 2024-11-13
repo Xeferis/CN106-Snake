@@ -1,16 +1,37 @@
 import tkinter as tk
 from random import randrange
 
+class zone:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def get_start(self):
+        return self.x, self.y
+
+    def get_end(self):
+        return self.x + self.width, self.y + self.height
+
+    def render(self, canvas):
+        canvas.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height, fill="blue")
 
 class board:
     def __init__(self, snake, width: int = 500, height: int = 500):
         # App init
         self.app = tk.Tk()
         self.app.title("Snake")
+        self.app.resizable(False, False)
+        self.app.configure(bg="black")
         self.width = width
         self.height = height
         self.canvas = tk.Canvas(self.app, width=width, height=height)
-        self.canvas.pack()
+        self.canvas.pack(padx=10, pady=10)
+        self.deadzones = []
+
+        self.__add_deadzone(0, 0, 90, 30)
+        self.__add_deadzone(410, 0, 90, 30)
 
         # Game init
         start_x = width // 2
@@ -26,20 +47,62 @@ class board:
         self.game_over = False
 
         # Gamesettings
+        self.snake_head_color = "dark green"
+        self.snakebody_color = "green"
         self.food_color = "red"
 
+    def __add_deadzone(self, x, y, width, height):
+        self.deadzones.append(zone(x, y, width, height))
+
+    def __render_deadzones(self):
+        # ? Render deadzones DEBUG
+        for dz in self.deadzones:
+            dz.render(self.canvas)
+
+    def __check_deadzone(self, x, y):
+        for dz in self.deadzones:
+            dzx, dzy = dz.get_start()
+            dzx_end, dzy_end = dz.get_end()
+            if dzx <= x <= dzx_end and dzy <= y <= dzy_end:
+                return True
+        return False
+    
+    def __check_food_position(self, x, y):
+        for f in self.food:
+            if f.x == x and f.y == y:
+                return True
+        return False
+    
+    def __check_snake_position(self, x, y):
+        if self.snake.x == x and self.snake.y == y:
+            return True
+        return False
+
     def progression(self):
+        if self.points >= 30:
+            self.gameWon()
         if self.points % 5 == 0 and self.points != 0:
             self.points += 6
             self.level += 1
             if self.speed > 10:
                 self.speed -= 10
 
+    def generate_point(self, padding: int = 10, steps: int = 10):
+        x = randrange(padding, self.width - padding, steps)
+        y = randrange(padding, self.height - padding, steps)
+        return x, y
+
     def generate_food(self, amount: int = 2):
         print("Generating food")
         for i in range(amount):
-            x = randrange(10, self.width-10, 10)
-            y = randrange(10, self.height-10, 10)
+            not_valid = True
+            x, y = self.generate_point()
+
+            if self.__check_deadzone(x, y) or self.__check_food_position(x, y) or self.__check_snake_position(x, y):
+                while not_valid:
+                    x, y = self.generate_point()
+                    if not self.__check_deadzone(x, y) and not self.__check_food_position(x, y) and not self.__check_snake_position(x, y):
+                        not_valid = False
             self.food.append(food(x, y))
 
     def render_food(self):
@@ -54,16 +117,16 @@ class board:
             self.snake.y,
             self.snake.x + self.snake.width,
             self.snake.y + self.snake.height,
-            fill="green",
+            fill=self.snake_head_color,
         )
         for t in self.snake.tail:
             self.canvas.create_rectangle(
-                t.x, t.y, t.x + t.width, t.y + t.height, fill="green"
+                t.x, t.y, t.x + t.width, t.y + t.height, fill=self.snakebody_color
             )
 
     def render_infos(self):
-        self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw")
-        self.canvas.create_text(10, 20, text=f"Level: {self.level}", anchor="nw")
+        self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw", width=70)
+        self.canvas.create_text(430, 10, text=f"Level: {self.level}", anchor="nw", width=70)
 
     def render(self):
         self.render_infos()
@@ -140,19 +203,28 @@ class board:
 
     def gameOver(self):
         print("Game Over")
+        self.clear()
+        self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
         self.canvas.create_text(
-            self.width // 2, self.height // 2, text="Game Over", fill="red"
+            self.width // 2, self.height // 2, text="Game Over", fill="red", font=("", 50)
         )
         self.game_over = True
 
     def gameWon(self):
         print("You Win")
+        self.clear()
+        score_msg = f"Your Score: {self.points}"
+        self.canvas.create_rectangle(0, 0, self.width, self.height, fill="black")
         self.canvas.create_text(
-            self.width // 2, self.height // 2, text="You Win", fill="green"
+            self.width // 2, self.height // 2, text="You Win", fill="green", font=("", 50)
+        )
+        self.canvas.create_text(
+            self.width // 2, self.height // 2 + 50, text=score_msg, fill="white", font=("", 20)
         )
         self.game_over = True
 
     def run(self):
+        self.app.lift()
         self.generate_food()
         self.refresh()
         self.app.mainloop()
