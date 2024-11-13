@@ -84,13 +84,24 @@ class board:
         elif direction == "d":
             self.snake.direction = "r"
 
+    def control_manual(self, event):
+        direction = event.char
+        if direction == "w":
+            self.snake.move("u")
+        elif direction == "s":
+            self.snake.move("d")
+        elif direction == "a":
+            self.snake.move("l")
+        elif direction == "d":
+            self.snake.move("r")
+
     def refresh(self):
+        self.clear()
         self.progression()
         self.app.bind("<KeyPress>", lambda event: self.control(event))
         self.snake.move(self.snake.direction)
-        self.clear()
-        self.render()
         self.check_collision()
+        self.render()
         if not self.game_over:
             self.canvas.after(self.speed, self.refresh)
 
@@ -106,24 +117,26 @@ class board:
 
     def tail_collision(self):
         # ! Tail collition not working with jsut one Tail yet
-        for t in self.snake.tail:
-            if self.snake.x == t.x and self.snake.y == t.y:
-                return True
+        if self.snake.get_pos() in [t.get_pos() for t in self.snake.tail]:
+            return True
         return False
 
     def food_collision(self):
         for f in self.food:
-            if self.snake.x == f.x and self.snake.y == f.y:
+            if self.snake.get_pos() == f.get_pos():
                 self.snake.grow()
+                self.snake.last_food = f
                 self.points += 1
                 self.food.remove(f)
-                self.generate_food(1)
+                return True
+        return False
 
     def check_collision(self):
-        if self.wall_collision() or self.tail_collision():
-            self.gameOver()
-
-        self.food_collision()
+        if not self.food_collision():
+            if self.wall_collision() or self.tail_collision():
+                self.gameOver()
+        else:
+            self.generate_food(1)
 
     def gameOver(self):
         print("Game Over")
@@ -174,6 +187,11 @@ class snake(body):
         self.direction = None
 
     def move(self, direction: str, step: int = 10):
+        if self.length >= 0:
+            if len(self.last) > self.length:
+                self.last.pop(0)
+            self.last.append(self.get_pos())
+
         if direction == "u":
             self.y -= step
         elif direction == "d":
@@ -187,11 +205,6 @@ class snake(body):
         else:
             raise ValueError("Invalid direction")
 
-        if self.length >= 0:
-            if len(self.last) > self.length:
-                self.last.pop(0)
-            self.last.append(self.get_pos())
-
         for i in range(self.length):
             self.tail[i].x = self.last[i][0]
             self.tail[i].y = self.last[i][1]
@@ -199,7 +212,6 @@ class snake(body):
     def grow(self):
         self.length += 1
         self.tail.append(body(self.last[-1][0], self.last[-1][1]))
-
 
 if __name__ == "__main__":
     s = snake()
