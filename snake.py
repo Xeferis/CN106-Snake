@@ -9,7 +9,7 @@ class board:
         self.app.title("Snake")
         self.width = width
         self.height = height
-        self.canvas = tk.Canvas(self.app, width=width + 5, height=height + 5)
+        self.canvas = tk.Canvas(self.app, width=width, height=height)
         self.canvas.pack()
 
         # Game init
@@ -38,8 +38,8 @@ class board:
     def generate_food(self, amount: int = 2):
         print("Generating food")
         for i in range(amount):
-            x = randrange(0, self.width, 10)
-            y = randrange(0, self.height, 10)
+            x = randrange(10, self.width-10, 10)
+            y = randrange(10, self.height-10, 10)
             self.food.append(food(x, y))
 
     def render_food(self):
