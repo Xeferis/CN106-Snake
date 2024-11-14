@@ -42,6 +42,7 @@ class board:
 
         self.level = 1
         self.speed = 100
+        self.points2win = 30
         self.food = []
         self.points = 0
         self.won = False
@@ -80,7 +81,7 @@ class board:
         return False
 
     def _progression(self) -> None:
-        if self.points >= 30:
+        if self.points >= self.points2win:
             self.won = True
         if self.points % 5 == 0 and self.points != 0:
             self.points += 6
@@ -137,7 +138,7 @@ class board:
 
     def _render_gameWon(self) -> None:
         score_msg = f"Your Score: {self.points}"
-        self.canvas.create_rectangle(0, 0, self.width, self.height, fill="black")
+        self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
         self.canvas.create_text(
             self.width // 2, self.height // 2, text="You Win", fill="green", font=("", 50)
         )
@@ -187,7 +188,9 @@ class board:
         self.snake.move(self.snake.direction)
         self._check_collision()
         self._render()
-        if not self.game_over:
+        if self.game_over or self.won:
+            pass
+        else:
             self.canvas.after(self.speed, self._refresh)
 
     def _wall_collision(self) -> bool:
