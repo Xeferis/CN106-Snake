@@ -183,12 +183,12 @@ class board:
     def _refresh(self) -> None:
         self._clear()
         self._progression()
-        self.app.bind("<KeyPress>", lambda event: self.control(event))
+        self.app.bind("<KeyPress>", lambda event: self._control(event))
         self.snake.move(self.snake.direction)
         self._check_collision()
         self._render()
         if not self.game_over:
-            self.canvas.after(self.speed, self.refresh)
+            self.canvas.after(self.speed, self._refresh)
 
     def _wall_collision(self) -> bool:
         if (
@@ -240,7 +240,7 @@ class body:
         self.x = x
         self.y = y
 
-    def get_pos(self) -> Tuple:
+    def get_pos(self) -> tuple:
         return (self.x, self.y)
 
 
