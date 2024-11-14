@@ -1,6 +1,7 @@
 import tkinter as tk
 from random import randrange
 
+
 class zone:
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
         self.x = x
@@ -15,7 +16,10 @@ class zone:
         return (self.x + self.width, self.y + self.height)
 
     def render(self, canvas) -> None:
-        canvas.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height, fill="blue")
+        canvas.create_rectangle(
+            self.x, self.y, self.x + self.width, self.y + self.height, fill="blue"
+        )
+
 
 class board:
     def __init__(self, snake, width: int = 500, height: int = 500) -> None:
@@ -68,13 +72,13 @@ class board:
             if dzx <= x <= dzx_end and dzy <= y <= dzy_end:
                 return True
         return False
-    
+
     def _check_food_position(self, x: int, y: int) -> bool:
         for f in self.food:
             if f.x == x and f.y == y:
                 return True
         return False
-    
+
     def _check_snake_position(self, x: int, y: int) -> bool:
         if self.snake.x == x and self.snake.y == y:
             return True
@@ -100,10 +104,18 @@ class board:
             not_valid = True
             x, y = self._generate_point()
 
-            if self._check_deadzone(x, y) or self._check_food_position(x, y) or self._check_snake_position(x, y):
+            if (
+                self._check_deadzone(x, y)
+                or self._check_food_position(x, y)
+                or self._check_snake_position(x, y)
+            ):
                 while not_valid:
                     x, y = self._generate_point()
-                    if not self._check_deadzone(x, y) and not self._check_food_position(x, y) and not self._check_snake_position(x, y):
+                    if (
+                        not self._check_deadzone(x, y)
+                        and not self._check_food_position(x, y)
+                        and not self._check_snake_position(x, y)
+                    ):
                         not_valid = False
             self.food.append(food(x, y))
 
@@ -127,23 +139,43 @@ class board:
             )
 
     def _render_infos(self) -> None:
-        self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw", width=70)
-        self.canvas.create_text(430, 10, text=f"Level: {self.level}", anchor="nw", width=70)
+        self.canvas.create_text(
+            10, 10, text=f"Points: {self.points}", anchor="nw", width=70
+        )
+        self.canvas.create_text(
+            430, 10, text=f"Level: {self.level}", anchor="nw", width=70
+        )
 
     def _render_gameOver(self) -> None:
-        self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
+        self.canvas.create_rectangle(
+            0, 0, self.width + 20, self.height + 20, fill="black"
+        )
         self.canvas.create_text(
-            self.width // 2, self.height // 2, text="Game Over", fill="red", font=("", 50)
+            self.width // 2,
+            self.height // 2,
+            text="Game Over",
+            fill="red",
+            font=("", 50),
         )
 
     def _render_gameWon(self) -> None:
         score_msg = f"Your Score: {self.points}"
-        self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
-        self.canvas.create_text(
-            self.width // 2, self.height // 2, text="You Win", fill="green", font=("", 50)
+        self.canvas.create_rectangle(
+            0, 0, self.width + 20, self.height + 20, fill="black"
         )
         self.canvas.create_text(
-            self.width // 2, self.height // 2 + 50, text=score_msg, fill="white", font=("", 20)
+            self.width // 2,
+            self.height // 2,
+            text="You Win",
+            fill="green",
+            font=("", 50),
+        )
+        self.canvas.create_text(
+            self.width // 2,
+            self.height // 2 + 50,
+            text=score_msg,
+            fill="white",
+            font=("", 20),
         )
 
     def _render(self) -> None:
@@ -286,6 +318,7 @@ class snake(body):
     def grow(self) -> None:
         self.length += 1
         self.tail.append(body(self.last[-1][0], self.last[-1][1]))
+
 
 if __name__ == "__main__":
     s = snake()
