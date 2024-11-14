@@ -4,6 +4,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from snake import *
 
+
 def test_board():
     s = snake()
     b = board(snake=s)
@@ -13,7 +14,7 @@ def test_board():
     assert b.food == []
     assert b.game_over == False
 
-    
+
 def test_snake():
     s = snake()
     assert s.x == 0
