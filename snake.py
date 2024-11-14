@@ -44,6 +44,7 @@ class board:
         self.speed = 100
         self.food = []
         self.points = 0
+        self.won = False
         self.game_over = False
 
         # Gamesettings
@@ -80,7 +81,7 @@ class board:
 
     def progression(self):
         if self.points >= 30:
-            self.gameWon()
+            self.won = True
         if self.points % 5 == 0 and self.points != 0:
             self.points += 6
             self.level += 1
@@ -128,10 +129,31 @@ class board:
         self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw", width=70)
         self.canvas.create_text(430, 10, text=f"Level: {self.level}", anchor="nw", width=70)
 
+    def render_gameOver(self):
+        self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
+        self.canvas.create_text(
+            self.width // 2, self.height // 2, text="Game Over", fill="red", font=("", 50)
+        )
+
+    def render_gameWon(self):
+        score_msg = f"Your Score: {self.points}"
+        self.canvas.create_rectangle(0, 0, self.width, self.height, fill="black")
+        self.canvas.create_text(
+            self.width // 2, self.height // 2, text="You Win", fill="green", font=("", 50)
+        )
+        self.canvas.create_text(
+            self.width // 2, self.height // 2 + 50, text=score_msg, fill="white", font=("", 20)
+        )
+
     def render(self):
-        self.render_infos()
-        self.render_food()
-        self.render_snake()
+        if self.game_over and not self.won:
+            self.render_gameOver()
+        elif self.won and not self.game_over:
+            self.render_gameWon()
+        else:
+            self.render_infos()
+            self.render_food()
+            self.render_snake()
 
     def clear(self):
         self.canvas.delete("all")
@@ -197,31 +219,9 @@ class board:
     def check_collision(self):
         if not self.food_collision():
             if self.wall_collision() or self.tail_collision():
-                self.gameOver()
+                self.game_over = True
         else:
             self.generate_food(1)
-
-    def gameOver(self):
-        print("Game Over")
-        self.clear()
-        self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
-        self.canvas.create_text(
-            self.width // 2, self.height // 2, text="Game Over", fill="red", font=("", 50)
-        )
-        self.game_over = True
-
-    def gameWon(self):
-        print("You Win")
-        self.clear()
-        score_msg = f"Your Score: {self.points}"
-        self.canvas.create_rectangle(0, 0, self.width, self.height, fill="black")
-        self.canvas.create_text(
-            self.width // 2, self.height // 2, text="You Win", fill="green", font=("", 50)
-        )
-        self.canvas.create_text(
-            self.width // 2, self.height // 2 + 50, text=score_msg, fill="white", font=("", 20)
-        )
-        self.game_over = True
 
     def run(self):
         self.app.lift()
