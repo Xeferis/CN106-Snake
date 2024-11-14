@@ -30,8 +30,8 @@ class board:
         self.canvas.pack(padx=10, pady=10)
         self.deadzones = []
 
-        self.__add_deadzone(0, 0, 90, 30)
-        self.__add_deadzone(410, 0, 90, 30)
+        self._add_deadzone(0, 0, 90, 30)
+        self._add_deadzone(410, 0, 90, 30)
 
         # Game init
         start_x = width // 2
@@ -52,15 +52,15 @@ class board:
         self.snakebody_color = "green"
         self.food_color = "red"
 
-    def __add_deadzone(self, x, y, width, height):
+    def _add_deadzone(self, x, y, width, height):
         self.deadzones.append(zone(x, y, width, height))
 
-    def __render_deadzones(self):
+    def _render_deadzones(self):
         # ? Render deadzones DEBUG
         for dz in self.deadzones:
             dz.render(self.canvas)
 
-    def __check_deadzone(self, x, y):
+    def _check_deadzone(self, x, y):
         for dz in self.deadzones:
             dzx, dzy = dz.get_start()
             dzx_end, dzy_end = dz.get_end()
@@ -68,18 +68,18 @@ class board:
                 return True
         return False
     
-    def __check_food_position(self, x, y):
+    def _check_food_position(self, x, y):
         for f in self.food:
             if f.x == x and f.y == y:
                 return True
         return False
     
-    def __check_snake_position(self, x, y):
+    def _check_snake_position(self, x, y):
         if self.snake.x == x and self.snake.y == y:
             return True
         return False
 
-    def progression(self):
+    def _progression(self):
         if self.points >= 30:
             self.won = True
         if self.points % 5 == 0 and self.points != 0:
@@ -88,31 +88,31 @@ class board:
             if self.speed > 10:
                 self.speed -= 10
 
-    def generate_point(self, padding: int = 10, steps: int = 10):
+    def _generate_point(self, padding: int = 10, steps: int = 10):
         x = randrange(padding, self.width - padding, steps)
         y = randrange(padding, self.height - padding, steps)
         return x, y
 
-    def generate_food(self, amount: int = 2):
+    def _generate_food(self, amount: int = 2):
         print("Generating food")
         for i in range(amount):
             not_valid = True
-            x, y = self.generate_point()
+            x, y = self._generate_point()
 
-            if self.__check_deadzone(x, y) or self.__check_food_position(x, y) or self.__check_snake_position(x, y):
+            if self._check_deadzone(x, y) or self._check_food_position(x, y) or self._check_snake_position(x, y):
                 while not_valid:
-                    x, y = self.generate_point()
-                    if not self.__check_deadzone(x, y) and not self.__check_food_position(x, y) and not self.__check_snake_position(x, y):
+                    x, y = self._generate_point()
+                    if not self._check_deadzone(x, y) and not self._check_food_position(x, y) and not self._check_snake_position(x, y):
                         not_valid = False
             self.food.append(food(x, y))
 
-    def render_food(self):
+    def _render_food(self):
         for f in self.food:
             self.canvas.create_oval(
                 f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color
             )
 
-    def render_snake(self):
+    def _render_snake(self):
         self.canvas.create_rectangle(
             self.snake.x,
             self.snake.y,
@@ -125,17 +125,17 @@ class board:
                 t.x, t.y, t.x + t.width, t.y + t.height, fill=self.snakebody_color
             )
 
-    def render_infos(self):
+    def _render_infos(self):
         self.canvas.create_text(10, 10, text=f"Points: {self.points}", anchor="nw", width=70)
         self.canvas.create_text(430, 10, text=f"Level: {self.level}", anchor="nw", width=70)
 
-    def render_gameOver(self):
+    def _render_gameOver(self):
         self.canvas.create_rectangle(0, 0, self.width+20, self.height+20, fill="black")
         self.canvas.create_text(
             self.width // 2, self.height // 2, text="Game Over", fill="red", font=("", 50)
         )
 
-    def render_gameWon(self):
+    def _render_gameWon(self):
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(0, 0, self.width, self.height, fill="black")
         self.canvas.create_text(
@@ -145,20 +145,20 @@ class board:
             self.width // 2, self.height // 2 + 50, text=score_msg, fill="white", font=("", 20)
         )
 
-    def render(self):
+    def _render(self):
         if self.game_over and not self.won:
-            self.render_gameOver()
+            self._render_gameOver()
         elif self.won and not self.game_over:
-            self.render_gameWon()
+            self._render_gameWon()
         else:
-            self.render_infos()
-            self.render_food()
-            self.render_snake()
+            self._render_infos()
+            self._render_food()
+            self._render_snake()
 
-    def clear(self):
+    def _clear(self):
         self.canvas.delete("all")
 
-    def control(self, event):
+    def _control(self, event):
         direction = event.char
         if direction == "w":
             self.snake.direction = "u"
@@ -169,7 +169,7 @@ class board:
         elif direction == "d":
             self.snake.direction = "r"
 
-    def control_manual(self, event):
+    def _control_manual(self, event):
         direction = event.char
         if direction == "w":
             self.snake.move("u")
@@ -180,17 +180,17 @@ class board:
         elif direction == "d":
             self.snake.move("r")
 
-    def refresh(self):
-        self.clear()
-        self.progression()
+    def _refresh(self):
+        self._clear()
+        self._progression()
         self.app.bind("<KeyPress>", lambda event: self.control(event))
         self.snake.move(self.snake.direction)
-        self.check_collision()
-        self.render()
+        self._check_collision()
+        self._render()
         if not self.game_over:
             self.canvas.after(self.speed, self.refresh)
 
-    def wall_collision(self):
+    def _wall_collision(self):
         if (
             self.snake.x < 0
             or self.snake.x > self.width
@@ -200,13 +200,12 @@ class board:
             return True
         return False
 
-    def tail_collision(self):
-        # ! Tail collition not working with jsut one Tail yet
+    def _tail_collision(self):
         if self.snake.get_pos() in [t.get_pos() for t in self.snake.tail]:
             return True
         return False
 
-    def food_collision(self):
+    def _food_collision(self):
         for f in self.food:
             if self.snake.get_pos() == f.get_pos():
                 self.snake.grow()
@@ -216,17 +215,17 @@ class board:
                 return True
         return False
 
-    def check_collision(self):
-        if not self.food_collision():
-            if self.wall_collision() or self.tail_collision():
+    def _check_collision(self):
+        if not self._food_collision():
+            if self._wall_collision() or self._tail_collision():
                 self.game_over = True
         else:
-            self.generate_food(1)
+            self._generate_food(1)
 
     def run(self):
         self.app.lift()
-        self.generate_food()
-        self.refresh()
+        self._generate_food()
+        self._refresh()
         self.app.mainloop()
 
 
