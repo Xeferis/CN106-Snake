@@ -22,7 +22,7 @@ class zone:
 
 
 class board:
-    def __init__(self, snake, width: int = 500, height: int = 500) -> None:
+    def __init__(self, snake, points2win: int, width: int = 500, height: int = 500) -> None:
         # App init
         self.app = tk.Tk()
         self.app.title("Snake")
@@ -46,7 +46,7 @@ class board:
 
         self.level = 1
         self.speed = 100
-        self.points2win = 30
+        self.points2win = points2win
         self.food = []
         self.points = 0
         self.won = False
@@ -323,6 +323,6 @@ class snake(body):
 if __name__ == "__main__":
     s = snake()
 
-    b = board(snake=s)
+    b = board(snake=s, points2win=30)
 
     b.run()
