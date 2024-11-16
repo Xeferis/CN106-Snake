@@ -149,6 +149,7 @@ class board:
         )
 
     def _render_gameOver(self) -> None:  # pragma: no cover
+        score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
         )
@@ -158,6 +159,13 @@ class board:
             text="Game Over",
             fill="red",
             font=("", 50),
+        )
+        self.canvas.create_text(
+            self.width // 2,
+            self.height // 2 + 50,
+            text=score_msg,
+            fill="white",
+            font=("", 20),
         )
 
     def _render_gameWon(self) -> None:  # pragma: no cover
