@@ -190,8 +190,21 @@ class board:
             font=("", 20),
         )
 
+    def _render_start(self) -> None:  # pragma: no cover
+        self.canvas.create_rectangle(
+                0, 0, self.width + 20, self.height + 20, fill="black"
+            )
+        self.canvas.create_text(
+            self.width // 2,
+            self.height // 2,
+            text="Press any key to start",
+            font=("", 20),
+        )
+
     def _render(self) -> None:  # pragma: no cover
-        if self.game_over and not self.won:
+        if not self.running:
+            self._render_start()
+        elif self.game_over and not self.won:
             self._render_gameOver()
         elif self.won and not self.game_over:
             self._render_gameWon()
@@ -235,21 +248,12 @@ class board:
         self._clear()
         self._progression()
         if not self.running:
-            self.canvas.create_rectangle(
-                0, 0, self.width + 20, self.height + 20, fill="black"
-            )
-            self.canvas.create_text(
-                self.width // 2,
-                self.height // 2,
-                text="Press any key to start",
-                font=("", 20),
-            )
             self.app.bind("<KeyPress>", lambda event: self._start_game())
         else:
             self.app.bind("<KeyPress>", lambda event: self._control(event))
             self.snake.move(self.snake.direction)
             self._check_collision()
-            self._render()
+        self._render()
         if self.game_over or self.won:
             pass
         else:
