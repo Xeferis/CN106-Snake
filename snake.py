@@ -42,7 +42,7 @@ class board:
     """Game board
     """
     def __init__(
-        self, snake, points2win: int = 100, width: int = 500, height: int = 500
+        self, snake, width: int = 500, height: int = 500, difficulty: int = 1
     ) -> None:
         # App init
         self.app = tk.Tk()
@@ -67,8 +67,7 @@ class board:
         self.snake.update(start_x, start_y)
 
         self.level = 1
-        self.speed = 100
-        self.points2win = points2win
+        self.difficulty_info = self._set_difficulty(difficulty)
         self.food = []
         self.points = 0
         self.won = False
@@ -78,6 +77,36 @@ class board:
         self.snake_head_color = "dark green"
         self.snakebody_color = "green2"
         self.food_color = "red"
+
+    def _set_difficulty(self, difficulty: int) -> None:
+        """Set the difficulty of the game
+
+        Args:
+            difficulty (int): Difficulty of the game
+
+        Returns:
+            str: Difficulty name
+        """
+        if difficulty == 1:
+            self.speed = 100
+            self._speedincrease = 5
+            self.points2win = 100
+            return "Easy"
+        elif difficulty == 2:
+            self.speed = 100
+            self._speedincrease = 10
+            self.points2win = 100
+            return "Normal"
+        elif difficulty == 3:
+            self.speed = 80
+            self._speedincrease = 10
+            self.points2win = 200
+            return "Hard"
+        elif difficulty == 4:
+            self.speed = 10
+            self._speedincrease = 1
+            self.points2win = 500
+            return "Insane"
 
     def _add_deadzone(self, x: int, y: int, width: int, height: int) -> None:
         """Add a deadzone to the game board
@@ -151,8 +180,8 @@ class board:
         if self.points % 5 == 0 and self.points != 0:
             self.points += 6
             self.level += 1
-            if self.speed > 10:
-                self.speed -= 10
+            if self.speed > self._speedincrease:
+                self.speed -= self._speedincrease
 
     def _generate_point(self, padding: int = 10, steps: int = 10) -> tuple:
         """Generate a random point on the game board
@@ -219,11 +248,17 @@ class board:
     def _render_infos(self) -> None:  # pragma: no cover
         """Render the game infos on the canvas
         """
+        text_width = 100
+        text_height = 10
+        padding = 10
         self.canvas.create_text(
-            10, 10, text=f"Points: {self.points}", anchor="nw", width=70
+            padding, text_height, text=f"Points: {self.points}", anchor="nw", width=text_width
         )
         self.canvas.create_text(
-            430, 10, text=f"Level: {self.level}", anchor="nw", width=70
+            self.width // 2, text_height, text=f"Speed: {self.speed} ms/f", anchor="n", width=text_width
+        )
+        self.canvas.create_text(
+            self.width - text_width + 30 - padding, text_height, text=f"Level: {self.level}", anchor="nw", width=text_width-30
         )
 
     def _render_gameOver(self) -> None:  # pragma: no cover
@@ -275,15 +310,28 @@ class board:
     def _render_start(self) -> None:  # pragma: no cover
         """Render the start screen
         """
+        settings = f"Difficulty: {self.difficulty_info} - Points to win: {self.points2win}"
+        settings2 = f"Speed: {self.speed} - Speedincrease: {self._speedincrease}"
+        explain = "Use WASD to move the snake"
+
+        text_low = [settings, settings2, explain]
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
         )
         self.canvas.create_text(
             self.width // 2,
             self.height // 2,
-            text="Press any key to start",
+            text="Press any key to start ...",
             font=("", 20),
         )
+
+        for i, txt in enumerate(text_low):
+            self.canvas.create_text(
+                self.width // 2,
+                self.height // 2 + 50 + i * 20,
+                text=txt,
+                font=("", 15),
+            )
 
     def _render(self) -> None:  # pragma: no cover
         """Render the game
@@ -511,6 +559,6 @@ class snake(body):
 if __name__ == "__main__":
     s = snake()
 
-    b = board(snake=s, points2win=30)
+    b = board(snake=s, difficulty=1)
 
     b.run()
