@@ -1,5 +1,5 @@
 import tkinter as tk
-from random import randrange
+from random import randrange, choice
 
 
 class zone:
@@ -35,6 +35,7 @@ class board:
         self.canvas = tk.Canvas(self.app, width=width, height=height)
         self.canvas.pack(padx=10, pady=10)
         self.deadzones = []
+        self.running = False
 
         self._add_deadzone(0, 0, 90, 30)
         self._add_deadzone(410, 0, 90, 30)
@@ -56,7 +57,7 @@ class board:
 
         # Gamesettings
         self.snake_head_color = "dark green"
-        self.snakebody_color = "green"
+        self.snakebody_color = "green2"
         self.food_color = "red"
 
     def _add_deadzone(self, x: int, y: int, width: int, height: int) -> None:
@@ -101,7 +102,6 @@ class board:
         return (x, y)
 
     def _generate_food(self, amount: int = 2) -> None:
-        print("Generating food")
         for i in range(amount):
             not_valid = True
             x, y = self._generate_point()
@@ -149,6 +149,7 @@ class board:
         )
 
     def _render_gameOver(self) -> None:  # pragma: no cover
+        self.running = False
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
@@ -169,6 +170,7 @@ class board:
         )
 
     def _render_gameWon(self) -> None:  # pragma: no cover
+        self.running = False
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
@@ -223,13 +225,31 @@ class board:
         elif direction == "d":
             self.snake.move("r")
 
+    def _start_game(self) -> None:
+        possible_directions = ["u", "d", "l", "r"]
+        self.running = True
+
+        self.snake.direction = choice(possible_directions)
+
     def _refresh(self) -> None:  # pragma: no cover
         self._clear()
         self._progression()
-        self.app.bind("<KeyPress>", lambda event: self._control(event))
-        self.snake.move(self.snake.direction)
-        self._check_collision()
-        self._render()
+        if not self.running:
+            self.canvas.create_rectangle(
+                0, 0, self.width + 20, self.height + 20, fill="black"
+            )
+            self.canvas.create_text(
+                self.width // 2,
+                self.height // 2,
+                text="Press any key to start",
+                font=("", 20),
+            )
+            self.app.bind("<KeyPress>", lambda event: self._start_game())
+        else:
+            self.app.bind("<KeyPress>", lambda event: self._control(event))
+            self.snake.move(self.snake.direction)
+            self._check_collision()
+            self._render()
         if self.game_over or self.won:
             pass
         else:
@@ -268,7 +288,7 @@ class board:
             self._generate_food(1)
 
     def run(self) -> None:  # pragma: no cover
-        self.app.lift()
+        self.app.focus_force()
         self._generate_food()
         self._refresh()
         self.app.mainloop()
