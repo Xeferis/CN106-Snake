@@ -192,8 +192,8 @@ class board:
 
     def _render_start(self) -> None:  # pragma: no cover
         self.canvas.create_rectangle(
-                0, 0, self.width + 20, self.height + 20, fill="black"
-            )
+            0, 0, self.width + 20, self.height + 20, fill="black"
+        )
         self.canvas.create_text(
             self.width // 2,
             self.height // 2,
