@@ -3,6 +3,8 @@ from random import randrange, choice
 
 
 class zone:
+    """Adding zones to the game board
+    """
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
         self.x = x
         self.y = y
@@ -10,18 +12,35 @@ class zone:
         self.height = height
 
     def get_start(self) -> tuple:
+        """Get the start position of the zone
+
+        Returns:
+            tuple: (x, y)
+        """
         return (self.x, self.y)
 
     def get_end(self) -> tuple:
+        """Get the end position of the zone
+
+        Returns:
+            tuple: (x, y)
+        """
         return (self.x + self.width, self.y + self.height)
 
     def render(self, canvas) -> None:  # pragma: no cover
+        """Render the zone on the canvas
+
+        Args:
+            canvas: The canvas to render the zone on
+        """
         canvas.create_rectangle(
             self.x, self.y, self.x + self.width, self.y + self.height, fill="blue"
         )
 
 
 class board:
+    """Game board
+    """
     def __init__(
         self, snake, points2win: int = 100, width: int = 500, height: int = 500
     ) -> None:
@@ -61,14 +80,33 @@ class board:
         self.food_color = "red"
 
     def _add_deadzone(self, x: int, y: int, width: int, height: int) -> None:
+        """Add a deadzone to the game board
+
+        Args:
+            x (int): start x position
+            y (int): start y position
+            width (int): Zonewidth
+            height (int): Zoneheight
+        """
         self.deadzones.append(zone(x, y, width, height))
 
     def _render_deadzones(self) -> None:  # pragma: no cover
+        """Render the deadzones on the canvas
+        """
         # ? Render deadzones DEBUG
         for dz in self.deadzones:
             dz.render(self.canvas)
 
     def _check_deadzone(self, x: int, y: int) -> bool:
+        """Check if a position is in a deadzone
+
+        Args:
+            x (int): Position x to check
+            y (int): Position y to check
+
+        Returns:
+            bool: True if the position is in a deadzone
+        """
         for dz in self.deadzones:
             dzx, dzy = dz.get_start()
             dzx_end, dzy_end = dz.get_end()
@@ -77,17 +115,37 @@ class board:
         return False
 
     def _check_food_position(self, x: int, y: int) -> bool:
+        """Check if a food is at a position
+
+        Args:
+            x (int): Position x to check
+            y (int): Position y to check
+
+        Returns:
+            bool: True if a food is at the position
+        """
         for f in self.food:
             if f.x == x and f.y == y:
                 return True
         return False
 
     def _check_snake_position(self, x: int, y: int) -> bool:
+        """Check if the snake is at a position
+
+        Args:
+            x (int): Position x to check
+            y (int): Position y to check
+
+        Returns:
+            bool: True if the snake is at the position
+        """
         if self.snake.x == x and self.snake.y == y:
             return True
         return False
 
     def _progression(self) -> None:
+        """Progression calculation. Check if the player has won or leveled up
+        """
         if self.points >= self.points2win:
             self.won = True
         if self.points % 5 == 0 and self.points != 0:
@@ -97,11 +155,25 @@ class board:
                 self.speed -= 10
 
     def _generate_point(self, padding: int = 10, steps: int = 10) -> tuple:
+        """Generate a random point on the game board
+
+        Args:
+            padding (int, optional): Distance to Gameboard border. Defaults to 10.
+            steps (int, optional): Step value of the render Grid. Defaults to 10.
+
+        Returns:
+            tuple: (x, y)
+        """
         x = randrange(padding, self.width - padding, steps)
         y = randrange(padding, self.height - padding, steps)
         return (x, y)
 
     def _generate_food(self, amount: int = 2) -> None:
+        """Generate food on the game board
+
+        Args:
+            amount (int, optional): Amount of food to generate. Defaults to 2.
+        """
         for i in range(amount):
             not_valid = True
             x, y = self._generate_point()
@@ -122,12 +194,16 @@ class board:
             self.food.append(food(x, y))
 
     def _render_food(self) -> None:  # pragma: no cover
+        """Render the food on the canvas
+        """
         for f in self.food:
             self.canvas.create_oval(
                 f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color
             )
 
     def _render_snake(self) -> None:  # pragma: no cover
+        """Render the snake on the canvas
+        """
         self.canvas.create_rectangle(
             self.snake.x,
             self.snake.y,
@@ -141,6 +217,8 @@ class board:
             )
 
     def _render_infos(self) -> None:  # pragma: no cover
+        """Render the game infos on the canvas
+        """
         self.canvas.create_text(
             10, 10, text=f"Points: {self.points}", anchor="nw", width=70
         )
@@ -149,6 +227,8 @@ class board:
         )
 
     def _render_gameOver(self) -> None:  # pragma: no cover
+        """Render the game over screen
+        """
         self.running = False
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
@@ -170,6 +250,8 @@ class board:
         )
 
     def _render_gameWon(self) -> None:  # pragma: no cover
+        """Render the game won screen
+        """
         self.running = False
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
@@ -191,6 +273,8 @@ class board:
         )
 
     def _render_start(self) -> None:  # pragma: no cover
+        """Render the start screen
+        """
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
         )
@@ -202,6 +286,8 @@ class board:
         )
 
     def _render(self) -> None:  # pragma: no cover
+        """Render the game
+        """
         if not self.running:
             self._render_start()
         elif self.game_over and not self.won:
@@ -214,9 +300,16 @@ class board:
             self._render_snake()
 
     def _clear(self) -> None:  # pragma: no cover
+        """Clear the canvas
+        """
         self.canvas.delete("all")
 
     def _control(self, event) -> None:
+        """Control the snake with the keyboard
+
+        Args:
+            event (tkinter.event): The event from the keyboard
+        """
         direction = event.char
         if direction == "w":
             self.snake.direction = "u"
@@ -227,7 +320,13 @@ class board:
         elif direction == "d":
             self.snake.direction = "r"
 
+    # ? For DEBUG
     def _control_manual(self, event) -> None:
+        """DEBUG: Control the snake with the keyboard for singlesteps
+
+        Args:
+            event (tkinter.event): The event from the keyboard
+        """
         direction = event.char
         if direction == "w":
             self.snake.move("u")
@@ -239,12 +338,16 @@ class board:
             self.snake.move("r")
 
     def _start_game(self) -> None:
+        """Start the game. And set a random direction for the snake
+        """
         possible_directions = ["u", "d", "l", "r"]
         self.running = True
 
         self.snake.direction = choice(possible_directions)
 
     def _refresh(self) -> None:  # pragma: no cover
+        """Refresh the gamescreens
+        """
         self._clear()
         self._progression()
         if not self.running:
@@ -254,12 +357,15 @@ class board:
             self.snake.move(self.snake.direction)
             self._check_collision()
         self._render()
-        if self.game_over or self.won:
-            pass
-        else:
+        if not self.game_over and not self.won:
             self.canvas.after(self.speed, self._refresh)
 
     def _wall_collision(self) -> bool:
+        """Check if the snake collided with a wall
+
+        Returns:
+            bool: True if the snake collided with a wall
+        """
         if (
             self.snake.x < 0
             or self.snake.x > self.width
@@ -270,11 +376,21 @@ class board:
         return False
 
     def _tail_collision(self) -> bool:
+        """Check if the snake collided with its tail
+
+        Returns:
+            bool: True if the snake collided with its tail
+        """
         if self.snake.get_pos() in [t.get_pos() for t in self.snake.tail]:
             return True
         return False
 
     def _food_collision(self) -> bool:
+        """Check if the snake collided with food
+
+        Returns:
+            bool: True if the snake collided with food
+        """
         for f in self.food:
             if self.snake.get_pos() == f.get_pos():
                 self.snake.grow()
@@ -284,7 +400,9 @@ class board:
                 return True
         return False
 
-    def _check_collision(self) -> bool:
+    def _check_collision(self) -> None:
+        """Check if the snake collided with something
+        """
         if not self._food_collision():
             if self._wall_collision() or self._tail_collision():
                 self.game_over = True
@@ -292,6 +410,8 @@ class board:
             self._generate_food(1)
 
     def run(self) -> None:  # pragma: no cover
+        """Run the game
+        """
         self.app.focus_force()
         self._generate_food()
         self._refresh()
@@ -299,6 +419,8 @@ class board:
 
 
 class body:
+    """Body class for the snake and food
+    """
     def __init__(self, x: int = 0, y: int = 0, size: int = 10) -> None:
         self.height = size
         self.width = size
@@ -306,19 +428,40 @@ class body:
         self.y = y
 
     def update(self, x: int, y: int) -> None:
+        """Update the position of the body
+
+        Args:
+            x (int): Position x to update to
+            y (int): Position y to update to
+        """
         self.x = x
         self.y = y
 
     def get_pos(self) -> tuple:
+        """Get the position of the body
+
+        Returns:
+            tuple: (x, y)
+        """
         return (self.x, self.y)
 
 
 class food(body):
+    """Food class for the game
+
+    Args:
+        body (class): Body class to inherit from
+    """
     def __init__(self, x: int, y: int) -> None:
         super().__init__(x, y)
 
 
 class snake(body):
+    """Snake class for the game
+
+    Args:
+        body (_type_): Body class to inherit from
+    """
     def __init__(self) -> None:
         super().__init__()
         self.length = 0
@@ -327,6 +470,15 @@ class snake(body):
         self.direction = None
 
     def move(self, direction: str, step: int = 10) -> None:
+        """Move the snake
+
+        Args:
+            direction (str): Direction to move the snake into
+            step (int, optional): Step value to move the snake should align with Grid of the board. Defaults to 10.
+
+        Raises:
+            ValueError: Invalid direction
+        """
         if self.length >= 0:
             if len(self.last) > self.length:
                 self.last.pop(0)
@@ -350,6 +502,8 @@ class snake(body):
             self.tail[i].y = self.last[i][1]
 
     def grow(self) -> None:
+        """Grow the snakes tail
+        """
         self.length += 1
         self.tail.append(body(self.last[-1][0], self.last[-1][1]))
 
