@@ -56,8 +56,7 @@ class board:
         self.deadzones = []
         self.running = False
 
-        self._add_deadzone(0, 0, 90, 30)
-        self._add_deadzone(410, 0, 90, 30)
+        self._add_deadzone(0, 0, self.width, 30)
 
         # Game init
         start_x = width // 2
@@ -107,6 +106,8 @@ class board:
             self._speedincrease = 1
             self.points2win = 500
             return "Insane"
+        else:
+            raise ValueError("Invalid difficulty")
 
     def _add_deadzone(self, x: int, y: int, width: int, height: int) -> None:
         """Add a deadzone to the game board

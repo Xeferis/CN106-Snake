@@ -192,3 +192,17 @@ def test_zone_get_start(test_zone):
 
 def test_zone_get_end(test_zone):
     assert test_zone.get_end() == (20, 20)
+
+def test_difficulty(test_snake):
+    b = board(snake=test_snake, difficulty=1)
+    assert b.difficulty_info == "Easy"
+    b = board(snake=test_snake, difficulty=2)
+    assert b.difficulty_info == "Normal"
+    b = board(snake=test_snake, difficulty=3)
+    assert b.difficulty_info == "Hard"
+    b = board(snake=test_snake, difficulty=4)
+    assert b.difficulty_info == "Insane"
+
+    with pytest.raises(Exception) as e_info:
+        b = board(snake=test_snake, difficulty=5)
+        assert e_info == "Invalid difficulty level"
