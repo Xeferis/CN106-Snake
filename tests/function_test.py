@@ -82,7 +82,29 @@ def test_generate_food(test_board):
 
 @pytest.mark.skip(reason="Not Testable yet!")
 def test_control(test_board):
-    return True
+    test_board._control()
+    assert test_board.snake.direction == "r"
+    test_board.snake.direction = "l"
+    test_board._control()
+    assert test_board.snake.direction == "l"
+    test_board.snake.direction = "u"
+    test_board._control()
+    assert test_board.snake.direction == "u"
+    test_board.snake.direction = "d"
+    test_board._control()
+    assert test_board.snake.direction == "d"
+
+
+@pytest.mark.skip(reason="Not Testable yet!")
+def test_manual_control(test_board):
+    test_board._manual_control("w")
+    assert test_board.snake.direction == "u"
+    test_board._manual_control("s")
+    assert test_board.snake.direction == "d"
+    test_board._manual_control("a")
+    assert test_board.snake.direction == "l"
+    test_board._manual_control("d")
+    assert test_board.snake.direction == "r"
 
 
 def test_wall_collision(test_board):

@@ -15,7 +15,7 @@ class zone:
     def get_end(self) -> tuple:
         return (self.x + self.width, self.y + self.height)
 
-    def render(self, canvas) -> None:
+    def render(self, canvas) -> None:  # pragma: no cover
         canvas.create_rectangle(
             self.x, self.y, self.x + self.width, self.y + self.height, fill="blue"
         )
@@ -62,7 +62,7 @@ class board:
     def _add_deadzone(self, x: int, y: int, width: int, height: int) -> None:
         self.deadzones.append(zone(x, y, width, height))
 
-    def _render_deadzones(self) -> None:
+    def _render_deadzones(self) -> None:  # pragma: no cover
         # ? Render deadzones DEBUG
         for dz in self.deadzones:
             dz.render(self.canvas)
@@ -121,13 +121,13 @@ class board:
                         not_valid = False
             self.food.append(food(x, y))
 
-    def _render_food(self) -> None:
+    def _render_food(self) -> None:  # pragma: no cover
         for f in self.food:
             self.canvas.create_oval(
                 f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color
             )
 
-    def _render_snake(self) -> None:
+    def _render_snake(self) -> None:  # pragma: no cover
         self.canvas.create_rectangle(
             self.snake.x,
             self.snake.y,
@@ -140,7 +140,7 @@ class board:
                 t.x, t.y, t.x + t.width, t.y + t.height, fill=self.snakebody_color
             )
 
-    def _render_infos(self) -> None:
+    def _render_infos(self) -> None:  # pragma: no cover
         self.canvas.create_text(
             10, 10, text=f"Points: {self.points}", anchor="nw", width=70
         )
@@ -148,7 +148,7 @@ class board:
             430, 10, text=f"Level: {self.level}", anchor="nw", width=70
         )
 
-    def _render_gameOver(self) -> None:
+    def _render_gameOver(self) -> None:  # pragma: no cover
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
         )
@@ -160,7 +160,7 @@ class board:
             font=("", 50),
         )
 
-    def _render_gameWon(self) -> None:
+    def _render_gameWon(self) -> None:  # pragma: no cover
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
             0, 0, self.width + 20, self.height + 20, fill="black"
@@ -180,7 +180,7 @@ class board:
             font=("", 20),
         )
 
-    def _render(self) -> None:
+    def _render(self) -> None:  # pragma: no cover
         if self.game_over and not self.won:
             self._render_gameOver()
         elif self.won and not self.game_over:
@@ -190,7 +190,7 @@ class board:
             self._render_food()
             self._render_snake()
 
-    def _clear(self) -> None:
+    def _clear(self) -> None:  # pragma: no cover
         self.canvas.delete("all")
 
     def _control(self, event) -> None:
@@ -215,7 +215,7 @@ class board:
         elif direction == "d":
             self.snake.move("r")
 
-    def _refresh(self) -> None:
+    def _refresh(self) -> None:  # pragma: no cover
         self._clear()
         self._progression()
         self.app.bind("<KeyPress>", lambda event: self._control(event))
@@ -259,7 +259,7 @@ class board:
         else:
             self._generate_food(1)
 
-    def run(self) -> None:
+    def run(self) -> None:  # pragma: no cover
         self.app.lift()
         self._generate_food()
         self._refresh()
