@@ -22,7 +22,9 @@ class zone:
 
 
 class board:
-    def __init__(self, snake, points2win: int = 100, width: int = 500, height: int = 500) -> None:
+    def __init__(
+        self, snake, points2win: int = 100, width: int = 500, height: int = 500
+    ) -> None:
         # App init
         self.app = tk.Tk()
         self.app.title("Snake")

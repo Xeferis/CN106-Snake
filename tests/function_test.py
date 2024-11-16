@@ -7,10 +7,12 @@ import tkinter as tk
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from snake import *
 
+
 @pytest.fixture
 def test_zone():
     z = zone(10, 10, 10, 10)
     return z
+
 
 @pytest.fixture
 def test_snake():
@@ -131,13 +133,16 @@ def test_tail_collision(test_board):
     assert test_board.snake.get_pos() == (10, 40)
     assert test_board._tail_collision()
 
+
 def test_body_update(test_snake):
     test_snake.update(10, 10)
     assert test_snake.x == 10
     assert test_snake.y == 10
 
+
 def test_body_get_pos(test_snake):
     assert test_snake.get_pos() == (0, 0)
+
 
 def test_snake_move(test_snake):
     test_snake.move("u")
@@ -149,6 +154,7 @@ def test_snake_move(test_snake):
     test_snake.move("r")
     assert test_snake.get_pos() == (0, 0)
 
+
 def test_snake_grow(test_snake):
     test_snake.last.append((0, 0))
     test_snake.grow()
@@ -157,8 +163,10 @@ def test_snake_grow(test_snake):
     test_snake.grow()
     assert test_snake.length == 2
 
+
 def test_zone_get_start(test_zone):
     assert test_zone.get_start() == (10, 10)
+
 
 def test_zone_get_end(test_zone):
     assert test_zone.get_end() == (20, 20)

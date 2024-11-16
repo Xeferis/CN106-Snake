@@ -12,6 +12,7 @@ def test_zone():
     assert z.width == 10
     assert z.height == 10
 
+
 def test_board():
     s = snake()
     b = board(snake=s)
@@ -28,12 +29,14 @@ def test_board():
     assert b.won == False
     assert b.game_over == False
 
+
 def test_food():
     f = food(10, 10)
     assert f.x == 10
     assert f.y == 10
     assert f.height == 10
     assert f.width == 10
+
 
 def test_snake():
     s = snake()
