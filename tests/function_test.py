@@ -193,6 +193,7 @@ def test_zone_get_start(test_zone):
 def test_zone_get_end(test_zone):
     assert test_zone.get_end() == (20, 20)
 
+
 def test_difficulty(test_snake):
     b = board(snake=test_snake, difficulty=1)
     assert b.difficulty_info == "Easy"

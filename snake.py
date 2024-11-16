@@ -3,8 +3,8 @@ from random import randrange, choice
 
 
 class zone:
-    """Adding zones to the game board
-    """
+    """Adding zones to the game board"""
+
     def __init__(self, x: int, y: int, width: int, height: int) -> None:
         self.x = x
         self.y = y
@@ -39,8 +39,8 @@ class zone:
 
 
 class board:
-    """Game board
-    """
+    """Game board"""
+
     def __init__(
         self, snake, width: int = 500, height: int = 500, difficulty: int = 1
     ) -> None:
@@ -121,8 +121,7 @@ class board:
         self.deadzones.append(zone(x, y, width, height))
 
     def _render_deadzones(self) -> None:  # pragma: no cover
-        """Render the deadzones on the canvas
-        """
+        """Render the deadzones on the canvas"""
         # ? Render deadzones DEBUG
         for dz in self.deadzones:
             dz.render(self.canvas)
@@ -174,8 +173,7 @@ class board:
         return False
 
     def _progression(self) -> None:
-        """Progression calculation. Check if the player has won or leveled up
-        """
+        """Progression calculation. Check if the player has won or leveled up"""
         if self.points >= self.points2win:
             self.won = True
         if self.points % 5 == 0 and self.points != 0:
@@ -224,16 +222,14 @@ class board:
             self.food.append(food(x, y))
 
     def _render_food(self) -> None:  # pragma: no cover
-        """Render the food on the canvas
-        """
+        """Render the food on the canvas"""
         for f in self.food:
             self.canvas.create_oval(
                 f.x, f.y, f.x + f.width, f.y + f.height, fill=self.food_color
             )
 
     def _render_snake(self) -> None:  # pragma: no cover
-        """Render the snake on the canvas
-        """
+        """Render the snake on the canvas"""
         self.canvas.create_rectangle(
             self.snake.x,
             self.snake.y,
@@ -247,24 +243,34 @@ class board:
             )
 
     def _render_infos(self) -> None:  # pragma: no cover
-        """Render the game infos on the canvas
-        """
+        """Render the game infos on the canvas"""
         text_width = 100
         text_height = 10
         padding = 10
         self.canvas.create_text(
-            padding, text_height, text=f"Points: {self.points}", anchor="nw", width=text_width
+            padding,
+            text_height,
+            text=f"Points: {self.points}",
+            anchor="nw",
+            width=text_width,
         )
         self.canvas.create_text(
-            self.width // 2, text_height, text=f"Speed: {self.speed} ms/f", anchor="n", width=text_width
+            self.width // 2,
+            text_height,
+            text=f"Speed: {self.speed} ms/f",
+            anchor="n",
+            width=text_width,
         )
         self.canvas.create_text(
-            self.width - text_width + 30 - padding, text_height, text=f"Level: {self.level}", anchor="nw", width=text_width-30
+            self.width - text_width + 30 - padding,
+            text_height,
+            text=f"Level: {self.level}",
+            anchor="nw",
+            width=text_width - 30,
         )
 
     def _render_gameOver(self) -> None:  # pragma: no cover
-        """Render the game over screen
-        """
+        """Render the game over screen"""
         self.running = False
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
@@ -286,8 +292,7 @@ class board:
         )
 
     def _render_gameWon(self) -> None:  # pragma: no cover
-        """Render the game won screen
-        """
+        """Render the game won screen"""
         self.running = False
         score_msg = f"Your Score: {self.points}"
         self.canvas.create_rectangle(
@@ -309,9 +314,10 @@ class board:
         )
 
     def _render_start(self) -> None:  # pragma: no cover
-        """Render the start screen
-        """
-        settings = f"Difficulty: {self.difficulty_info} - Points to win: {self.points2win}"
+        """Render the start screen"""
+        settings = (
+            f"Difficulty: {self.difficulty_info} - Points to win: {self.points2win}"
+        )
         settings2 = f"Speed: {self.speed} - Speedincrease: {self._speedincrease}"
         explain = "Use WASD to move the snake"
 
@@ -335,8 +341,7 @@ class board:
             )
 
     def _render(self) -> None:  # pragma: no cover
-        """Render the game
-        """
+        """Render the game"""
         if not self.running:
             self._render_start()
         elif self.game_over and not self.won:
@@ -349,8 +354,7 @@ class board:
             self._render_snake()
 
     def _clear(self) -> None:  # pragma: no cover
-        """Clear the canvas
-        """
+        """Clear the canvas"""
         self.canvas.delete("all")
 
     def _control(self, event) -> None:
@@ -387,16 +391,14 @@ class board:
             self.snake.move("r")
 
     def _start_game(self) -> None:
-        """Start the game. And set a random direction for the snake
-        """
+        """Start the game. And set a random direction for the snake"""
         possible_directions = ["u", "d", "l", "r"]
         self.running = True
 
         self.snake.direction = choice(possible_directions)
 
     def _refresh(self) -> None:  # pragma: no cover
-        """Refresh the gamescreens
-        """
+        """Refresh the gamescreens"""
         self._clear()
         self._progression()
         if not self.running:
@@ -450,8 +452,7 @@ class board:
         return False
 
     def _check_collision(self) -> None:
-        """Check if the snake collided with something
-        """
+        """Check if the snake collided with something"""
         if not self._food_collision():
             if self._wall_collision() or self._tail_collision():
                 self.game_over = True
@@ -459,8 +460,7 @@ class board:
             self._generate_food(1)
 
     def run(self) -> None:  # pragma: no cover
-        """Run the game
-        """
+        """Run the game"""
         self.app.focus_force()
         self._generate_food()
         self._refresh()
@@ -468,8 +468,8 @@ class board:
 
 
 class body:
-    """Body class for the snake and food
-    """
+    """Body class for the snake and food"""
+
     def __init__(self, x: int = 0, y: int = 0, size: int = 10) -> None:
         self.height = size
         self.width = size
@@ -501,6 +501,7 @@ class food(body):
     Args:
         body (class): Body class to inherit from
     """
+
     def __init__(self, x: int, y: int) -> None:
         super().__init__(x, y)
 
@@ -511,6 +512,7 @@ class snake(body):
     Args:
         body (_type_): Body class to inherit from
     """
+
     def __init__(self) -> None:
         super().__init__()
         self.length = 0
@@ -551,8 +553,7 @@ class snake(body):
             self.tail[i].y = self.last[i][1]
 
     def grow(self) -> None:
-        """Grow the snakes tail
-        """
+        """Grow the snakes tail"""
         self.length += 1
         self.tail.append(body(self.last[-1][0], self.last[-1][1]))
 
