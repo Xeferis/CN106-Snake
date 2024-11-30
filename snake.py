@@ -44,6 +44,14 @@ class board:
     def __init__(
         self, snake, width: int = 500, height: int = 500, difficulty: int = 1
     ) -> None:
+        """Board
+
+        Args:
+            snake (_type_): _description_
+            width (int, optional): _description_. Defaults to 500.
+            height (int, optional): _description_. Defaults to 500.
+            difficulty (int, optional): 1 to 4. Defaults to 1.
+        """
         # App init
         self.app = tk.Tk()
         self.app.title("Snake")
